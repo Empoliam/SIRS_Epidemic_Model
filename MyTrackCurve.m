@@ -59,6 +59,12 @@ while i <= nMax
     end
     
     yk = ykn;
+    
+    if(stop(yk))
+        i = i -1;
+        break
+    end
+    
     ylist(:,i) = yk;
     
      if(stepsize < sMin)
@@ -75,11 +81,7 @@ while i <= nMax
     if(doPrint)
         disp(i + " - " + "Step Size = " + stepsize )
     end
-    
-    if(stop(yk))
-        break
-    end
-        
+            
     stepsize = min(stepsize*1.25,sMax);
     i = i + 1;
 end

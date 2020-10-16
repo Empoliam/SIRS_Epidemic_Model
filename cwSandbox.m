@@ -2,11 +2,20 @@ clear
 
 sir_model_680029911;
 
-B = 4.150639625924914;
-I0 = [0.051559211907975; 0.439728976515133] + 0.01;
+f = @(I) rhs(I(1:2),5.6);
+df = @(I) MyJacobian(f,I,1e-6);
 
-f = @(t,I) rhs(I,B);
+A = [1,0;0,1];
+B = [1,0;0,-1];
+C = [-1,0;0,-1];
+
+M = B;
 
 
-[xend,t,xt]=MyIVP(f,I0,[0,300],1000,'dp45');
-plot(t,xt)
+if (all(diag(M)>0))
+    2
+elseif (all(diag(M)<0))
+    1
+else
+    0
+end

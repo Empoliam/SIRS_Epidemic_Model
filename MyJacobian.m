@@ -1,7 +1,7 @@
 function o = MyJacobian(f,x,h)
 
 kMax = length(x);
-nf = length(f(zeros(kMax,1)));
+nf = length(f(x));
 I = eye(kMax);
 
 o = zeros(nf,kMax);

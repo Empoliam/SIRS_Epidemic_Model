@@ -10,6 +10,7 @@ format compact
 % rename as spiking_model_xxxyyyzzz.m and call this in your scripts for
 % each questions
 SNumber=680029911;
+
 if SNumber==0
    error(['Enter your 9 digit student number in your local copy of spiking_model.m   ',...
             'See instruction sheet or contact James Rankin at j.a.rankin@exeter.ac.uk if unsure.']); 
