@@ -47,3 +47,5 @@ cMap = colormap(0.9.*[0,0,1;0,1,0;1,0,0]);
 hold on
 scatter(ylist(3,:),ylist(1,:),15,stab,'filled')
 hold off
+
+save('ylist_stab','ylist','stab')

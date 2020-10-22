@@ -36,7 +36,7 @@ while i <= nMax
     
     f = @(y) [userf(y); ytan.' * (y-yp)];
     df = @(y) MyJacobian(f,y,jStep);
-    
+        
     [ykn,converged,~] = Solve(f,yp,df,'tol',1e-6,'maxIter',maxSolveIter);
     
     while(converged == 0)
