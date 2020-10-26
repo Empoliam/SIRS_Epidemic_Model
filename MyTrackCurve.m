@@ -9,7 +9,7 @@ addRequired(parser,'ytan',@isnumeric);
 addOptional(parser,'stepsize',1e-2,@isnumeric);
 addOptional(parser,'maxSolveIter',10,@isnumeric);
 addOptional(parser,'nMax',100,@isnumeric);
-addOptional(parser,'jStep',1e-4,@isnumeric);
+addOptional(parser,'jStep',1e-6,@isnumeric);
 addOptional(parser,'stop',@(y) false,@(func) isa(func,'function_handle'));
 addOptional(parser,'sMax',1,@isnumeric);
 addOptional(parser,'sMin',1e-8,@isnumeric);
@@ -25,28 +25,33 @@ sMax = parser.Results.sMax;
 sMin = parser.Results.sMin;
 doPrint = parser.Results.doPrint;
 
-ylist = zeros(length(y0),nMax);
+ylist = NaN(length(y0),nMax);
 
 i = 1;
 yk = y0;
 
 while i <= nMax
     
+    if (i == 1)
+        stepsize = 0;
+    elseif (i == 2)
+        stepsize = parser.Results.stepsize;
+    end
+
     yp = yk + stepsize.*ytan;
     
     f = @(y) [userf(y); ytan.' * (y-yp)];
     df = @(y) MyJacobian(f,y,jStep);
-        
+   
     [ykn,converged,~] = Solve(f,yp,df,'tol',1e-6,'maxIter',maxSolveIter);
-    
+        
     while(converged == 0)
         
         stepsize = stepsize/2;
         
         if(stepsize < sMin)
             disp("Failed to converge - Step size too small")
-            ykn = NaN(length(yk),1);
-            break
+            return
         end
         
         yp = yk + stepsize.*ytan;
@@ -67,7 +72,7 @@ while i <= nMax
     
     ylist(:,i) = yk;
     
-     if(stepsize < sMin)
+     if(stepsize < sMin && i ~= 1)
         break
     end
       
@@ -77,18 +82,13 @@ while i <= nMax
     
     z=A\B;
     ytan = (z./norm(z,Inf)) * sign(z' * ytan);
-     
-    if(doPrint)
-        disp(i + " - " + "Step Size = " + stepsize )
-    end
-            
+                 
     stepsize = min(stepsize*1.25,sMax);
     i = i + 1;
 end
 
-if (i < nMax)
-    padding = repmat(ylist(:,i),1,nMax-i+1);
-    ylist(:,i:end) = padding;
+if (i < nMax && doPrint)
+    disp(strcat("MyTrackCurve converged after ", num2str(i), " iterations. Consider using a smaller value of nMax to save memory."))
 end
 
 end

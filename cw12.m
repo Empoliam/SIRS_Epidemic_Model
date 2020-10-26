@@ -2,45 +2,47 @@ clear
 
 sir_model_680029911;
 
+jacobianAccuracy = 1e-6;
+iRange = [0,0.3];
+rRange = [0,0.7];
+
 %F = @(I) gamma0 .* (((2)./(1+exp(-2.*I./gamma0)))-1);
 F = @(I) sigm(I,gamma0);
 
 %list of beta values for each plot
+%3.7                    Stable
 %4.053                  Unstable
-%4.113606082799194      Fold Point
 %4.14                   Saddle + 2 Unstable
-%5.047284898616414      Hopf Bifurcation
+%4.9                    Unstable
 %5.5                    Stable
 
-betaList = [4.053,4.113606082799194,4.14,5.047284898616414,5.5];
+betaList = [3.7,4.05,4.14,4.9,5.5];
 
 %List of initial guesses to locate equilibria for each beta.
 guessesList = {...
+    [0.012;0.7],...
     [0.01;0],...
-    [[0.042071189255453;0.394545702716342],[0.015;0]],...
     [[0.031;0],[0.018;0],[0.05;0]],...
-    [0.083727867225947;0.576759807586980],...
+    [0.083;0.576],...
     [0.091;0]};
 
 %loop counter
 i = 1;
 for beta = betaList
-    
-    beta
-        
+         
     figure(i)
     
     hold on
     
     f = @(I) rhs(I(1:2),beta);
-    df = @(I) MyJacobian(f,I,1e-6);
+    df = @(I) MyJacobian(f,I,jacobianAccuracy);
         
     nulcA = @(I) (1 - I) - ((mu0 + sigma0)./(beta)) - ((eta0.*F(I))./(beta.*I));
     nulcB = @(I) (mu0.*I + eta0.*F(I))./(nu0 + sigma0);
     
     %plot nullclines
-    plot(0:0.001:0.3,nulcA(0:0.001:0.3),'g')
-    plot(0:0.001:0.3,nulcB(0:0.001:0.3),'g')
+    plot(0:0.001:0.3,nulcA(iRange(1):0.001:iRange(2)),'g')
+    plot(0:0.001:0.3,nulcB(iRange(1):0.001:iRange(2)),'g')
     
     guesses = cell2mat(guessesList(i));
     
@@ -94,8 +96,8 @@ for beta = betaList
     xlabel('I')
     ylabel('R')
     
-    xlim([0,0.3])
-    ylim([0,0.7])
+    xlim(iRange)
+    ylim(rRange)
     
     title(['beta = ', num2str(beta)])
     
