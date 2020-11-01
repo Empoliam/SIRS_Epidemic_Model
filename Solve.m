@@ -19,6 +19,8 @@ converged = 0;
 
 while (converged == 0) && (iterations < maxIter)
     
+    iterations;
+    
     x = xn;
     J = df(x);
     
