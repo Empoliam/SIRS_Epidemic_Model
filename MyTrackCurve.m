@@ -1,9 +1,8 @@
-function ylist = MyTrackCurve(userf,userdf,y0,ytan,varargin)
+function ylist = MyTrackCurve(userf,y0,ytan,varargin)
 
 parser = inputParser;
 
 addRequired(parser,'userf',@(func) isa(func,'function_handle'));
-addRequired(parser,'userdf',@(func) isa(func,'function_handle'));
 addRequired(parser,'y0',@isnumeric);
 addRequired(parser,'ytan',@isnumeric);
 addOptional(parser,'stepsize',1e-2,@isnumeric);
@@ -11,10 +10,11 @@ addOptional(parser,'maxSolveIter',10,@isnumeric);
 addOptional(parser,'nMax',100,@isnumeric);
 addOptional(parser,'jStep',1e-6,@isnumeric);
 addOptional(parser,'stop',@(y) false,@(func) isa(func,'function_handle'));
-addOptional(parser,'sMax',1,@isnumeric);
-addOptional(parser,'sMin',1e-8,@isnumeric);
+addOptional(parser,'sMax',1e-1,@isnumeric);
+addOptional(parser,'sMin',1e-12,@isnumeric);
 addOptional(parser,'doPrint',false,@islogical);
-parse(parser,userf,userdf,y0,ytan,varargin{:})
+addOptional(parser,'correctGuess',false,@islogical);
+parse(parser,userf,y0,ytan,varargin{:})
 
 stepsize = parser.Results.stepsize;
 maxSolveIter = parser.Results.maxSolveIter;
@@ -24,6 +24,7 @@ stop = parser.Results.stop;
 sMax = parser.Results.sMax;
 sMin = parser.Results.sMin;
 doPrint = parser.Results.doPrint;
+correctGuess = parser.Results.correctGuess;
 
 ylist = NaN(length(y0),nMax);
 
@@ -32,9 +33,9 @@ yk = y0;
 
 while i <= nMax
     
-    if (i == 1)
+    if (i == 1 && correctGuess)
         stepsize = 0;
-    elseif (i == 2)
+    elseif (i == 2 && correctGuess)
         stepsize = parser.Results.stepsize;
     end
 
@@ -50,7 +51,7 @@ while i <= nMax
         stepsize = stepsize/2;
         
         if(stepsize < sMin)
-            disp("Failed to converge - Step size too small")
+            warning("Failed to converge - Step size too small. This issue may potentially be solved by setting correctGuess to false.")
             return
         end
         
@@ -66,7 +67,6 @@ while i <= nMax
     yk = ykn;
     
     if(stop(yk))
-        i = i -1;
         break
     end
     

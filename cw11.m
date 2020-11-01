@@ -22,7 +22,7 @@ yTan0 = [0;0;-1];
 g = @(y) rhs(y(1:2),y(3));
 dg = @(y)MyJacobian(g,y,jacobianAccuracy);
 
-ylist = MyTrackCurve(g,dg,y0,yTan0,'stop',@(y) (y(3)<3.5 || y(1)<0),'sMax',0.01,'nMax',270);
+ylist = MyTrackCurve(g,y0,yTan0,'stop',@(y) (y(3)<3.5 || y(1)<0),'sMax',0.01,'nMax',270,'correctGuess',true);
 
 %%Compute stability; 0 = saddle, 1 = stable, 2 = unstable
 stab = NaN(1,length(ylist));

@@ -92,12 +92,12 @@ tan0 = [0;0;-1;-1];
 tan0 = tan0/norm(tan0);
 
 hInit0 = [hopfList(:,1);gamma0];
-trackHopfList(:,:,1) = MyTrackCurve(ghopf,dghopf,hInit0,tan0,'stop',stopCond,'sMax',0.05,'nMax',500);
-trackHopfList(:,:,2) = MyTrackCurve(ghopf,dghopf,hInit0,-tan0,'stop',stopCond,'sMax',0.05,'nMax',500);
+trackHopfList(:,:,1) = MyTrackCurve(ghopf,hInit0,tan0,'stop',stopCond,'sMax',0.05,'nMax',500,'correctGuess',true);
+trackHopfList(:,:,2) = MyTrackCurve(ghopf,hInit0,-tan0,'stop',stopCond,'sMax',0.05,'nMax',500,'correctGuess',true);
 
 hInit1 = [hopfList(:,2);gamma0];
-trackHopfList(:,:,3) = MyTrackCurve(ghopf,dghopf,hInit1,tan0,'stop',stopCond,'sMax',0.05,'nMax',500);
-trackHopfList(:,:,4) = MyTrackCurve(ghopf,dghopf,hInit1,-tan0,'stop',stopCond,'sMax',0.05,'nMax',500);
+trackHopfList(:,:,3) = MyTrackCurve(ghopf,hInit1,tan0,'stop',stopCond,'sMax',0.05,'nMax',500,'correctGuess',true);
+trackHopfList(:,:,4) = MyTrackCurve(ghopf,hInit1,-tan0,'stop',stopCond,'sMax',0.05,'nMax',500,'correctGuess',true);
 
 i = 1;
 while i < 4
@@ -132,13 +132,13 @@ tan1 = tan1/norm(tan1);
 
 [vec0,~] = eigs(dg([foldList(:,1);gamma0]));
 fInit0 = [foldList(:,1);gamma0;vec0(:,2)];
-trackFoldList(:,:,1) = MyTrackCurve(gfold,dgfold,fInit0,tan1,'stop',stopCond,'sMax',0.01,'nMax',350);
-trackFoldList(:,:,2) = MyTrackCurve(gfold,dgfold,fInit0,-tan1,'stop',stopCond,'sMax',0.01,'nMax',350);
+trackFoldList(:,:,1) = MyTrackCurve(gfold,fInit0,tan1,'stop',stopCond,'sMax',0.01,'nMax',350,'correctGuess',true);
+trackFoldList(:,:,2) = MyTrackCurve(gfold,fInit0,-tan1,'stop',stopCond,'sMax',0.01,'nMax',350,'correctGuess',false);
 
 [vec1,~] = eigs(dg([foldList(:,1);gamma0]));
 fInit1 = [foldList(:,2);gamma0;vec1(:,2)];
-trackFoldList(:,:,3) = MyTrackCurve(gfold,dgfold,fInit1,tan1,'stop',stopCond,'sMax',0.01,'nMax',350);
-trackFoldList(:,:,4) = MyTrackCurve(gfold,dgfold,fInit1,-tan1,'stop',stopCond,'sMax',0.01,'nMax',350);
+trackFoldList(:,:,3) = MyTrackCurve(gfold,fInit1,tan1,'stop',stopCond,'sMax',0.01,'nMax',350,'correctGuess',true);
+trackFoldList(:,:,4) = MyTrackCurve(gfold,fInit1,-tan1,'stop',stopCond,'sMax',0.01,'nMax',350,'correctGuess',true);
 
 figure()
 
@@ -147,12 +147,15 @@ hold on
 plot(trackFoldList(3,:),trackFoldList(4,:),'b')
 
 leg = zeros(2, 1);
-leg(1) = plot(NaN,NaN,'-r','MarkerFaceColor','r');
-leg(2) = plot(NaN,NaN,'-b','MarkerFaceColor','b');
+leg(1) = plot(NaN,NaN,'-r');
+leg(2) = plot(NaN,NaN,'-b');
 legend(leg, 'Hopf','Fold');
 hold off
 
 xlabel('beta')
 xlim([0,12])
 ylabel('gamma')
-ylim([0,0.1])
+ylim([0,0.07])
+
+
+save('hopf_fold','hopfList','foldList')
