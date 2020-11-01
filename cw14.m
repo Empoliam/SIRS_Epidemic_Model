@@ -34,11 +34,12 @@ J = @(x) MyJacobian(@(y) rhs(y(1:2),x(3)),x(1:2),jacobianAccuracy);
 
 %Frequency estimate
 eVals = eigs(J(upperHopf));
-fIni = abs(imag(eVals(1)));
+fIni = abs(imag(eVals(1))); %Imaginary part of positive eigenvalue
 
+%Fix I at the I value of the hopf point
 xStar = upperHopf(1);
 
-%[T,x2,p]
+%[T,x2,p] initial guess for orbit
 xIni = [2.*pi./fIni;upperHopf(2)+1e-2;upperHopf(3)];
 
 %Track orbits until fold point
@@ -78,10 +79,13 @@ while i <= length(orbList(1,:)) && ~isnan(orbList(1,i))
         orbStab(i) = 2;
     end
     
+    %Store beta values, for easier plotting
     rangeI(1,i) = orbList(3,i);
-    %Calculate min and max
+    
     %Solve for one full orbit
     [~,~,orb] = MyIVP(@(t,x) rhs(x,orbList(3,i)),[xStar,orbList(2,i)],[0,orbList(1,i)],N,'dp45');
+   
+    %Calculate min and max
     rangeI(2,i) = min(orb(1,:));
     rangeI(3,i) = max(orb(1,:));
     
@@ -99,6 +103,7 @@ xlim([3.5,6]);
 
 plot(ylist(3,:),ylist(1,:),'k-');
 
+%Add max/min orbit values
 hold on
 scatter(ylist(3,:),ylist(1,:),15,stab,'filled')
 gscatter(rangeI(1,:),rangeI(2,:),orbStab,'gr','__',[5,5],false)
@@ -115,9 +120,12 @@ hold on
 scatter(orbList(3,:),orbList(1,:),15,orbStab,'filled')
 hold off
 
+xlabel("beta")
+ylabel("T")
 
 %%Plot examples of periodic orbits
 figure(3)
+sgtitle("Example orbits")
 
 %Select 10 orbits, evenly spaced
 orbIndices = floor(linspace(1,nnz(~isnan(orbStab)),10));
@@ -132,7 +140,8 @@ while i <= 10
     
     %Plot orbit
     subplot(5,2,i)
-    
+        
+    %Colour by stability
     if(orbStab(j) == 1)
         orbStyle = 'g';
     else
@@ -143,6 +152,11 @@ while i <= 10
     
     xlim([0,0.35])
     ylim([0,0.75])
+    
+    xlabel("I")
+    ylabel("R")
+    
+    title("beta = " + num2str(orbList(3,j)));
     
     i = i + 1;
     
@@ -175,7 +189,7 @@ end
 
 %Equations for fold point
 res = @(x) [f(x(1:3)); JM(x(1:3)) * x(4:5); x(4:5)' * x(4:5) - 1];
-dres = @(x) MyJacobian(res,x,jacobianAccuracy);
+dres = @(x) MyJacobian(res,x,jacobianAccuracy*1e2);
 
 %Find initial guess for v
 [eVec,~] = eigs(JM(foldApprox));
@@ -191,19 +205,19 @@ hold on
 plot(sol(3),sol(1),'o','MarkerFaceColor',[1,0,1],'MarkerEdgeColor',[1,0,1])
 hold off
 
-%%Track fold point
-
-M2 = @(t1,x0,p) MyIVP(@(t,x) rhs2P(x,p(1),(2)),x0,[0,t1],N,'dp45');
-
-g = @(x) M2(x(1),[xStar;x(2)],x(3:4)) - [xStar;x(2)];
-JM2 = @(x) MyJacobian(@(y) M2(x(1),y,x(3:4)), [xStar;x(2)], jacobianAccuracy);
-
-res2 = @(x) [g(x(1:4)); JM2(x(1:4)) * x(5:6); x(5:6)' * x(5:6) - 1];
-dres2 = @(x) MyJacobian(res,x,jacobianAccuracy);
-
-tan1 = [0;0;0;1;0;0];
-
-[eVec,~] = eigs(JM2([foldApprox;gamma0]));
-fInit0 = [foldApprox;gamma0;eVec(:,2)];
-trackFoldList(:,:,1) = MyTrackCurve(res2,fInit0,tan1,'sMax',0.01,'nMax',10,'correctGuess',false);
-trackFoldList(:,:,2) = MyTrackCurve(res2,fInit0,-tan1,'sMax',0.01,'nMax',10,'correctGuess',false);
+%%Track fold point - INCOMPLETE
+% 
+% M2 = @(t1,x0,p) MyIVP(@(t,x) rhs2P(x,p(1),(2)),x0,[0,t1],N,'dp45');
+% 
+% g = @(x) M2(x(1),[xStar;x(2)],x(3:4)) - [xStar;x(2)];
+% JM2 = @(x) MyJacobian(@(y) M2(x(1),y,x(3:4)), [xStar;x(2)], jacobianAccuracy);
+% 
+% res2 = @(x) [g(x(1:4)); JM2(x(1:4)) * x(5:6); x(5:6)' * x(5:6) - 1];
+% dres2 = @(x) MyJacobian(res,x,jacobianAccuracy);
+% 
+% tan1 = [0;0;0;1;0;0];
+% 
+% [eVec,~] = eigs(JM2([foldApprox;gamma0]));
+% fInit0 = [foldApprox;gamma0;eVec(:,2)];
+% trackFoldList(:,:,1) = MyTrackCurve(res2,fInit0,tan1,'sMax',0.01,'nMax',10,'correctGuess',false);
+% trackFoldList(:,:,2) = MyTrackCurve(res2,fInit0,-tan1,'sMax',0.01,'nMax',10,'correctGuess',false);
