@@ -19,7 +19,7 @@ parser = inputParser;
 addRequired(parser,'f',@(func) isa(func,'function_handle'));
 addRequired(parser,'x0',@isnumeric);
 addRequired(parser,'df',@(func) isa(func,'function_handle'));
-addOptional(parser,'maxIter',50,@isnumeric);                        %Maximum solver iterations
+addOptional(parser,'maxIter',10,@isnumeric);                        %Maximum solver iterations
 addOptional(parser,'tol',1e-8,@isnumeric);                          %Tolerance for root
 parse(parser,f,x0,df,varargin{:})
 

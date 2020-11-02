@@ -58,7 +58,7 @@ i = 1;
 for beta = betaList
     
     figure(i)
-    
+    set(gcf,'Position', [10 10 800 800])
     xlabel('I')
     ylabel('R')
     
@@ -134,8 +134,8 @@ for beta = betaList
             
             plot(separatrix1(1,:),separatrix1(2,:),'r');
             plot(separatrix2(1,:),separatrix2(2,:),'r');
-            plot(separatrix3(1,:),separatrix3(2,:),'g');
-            plot(separatrix4(1,:),separatrix4(2,:),'g');
+            plot(separatrix3(1,:),separatrix3(2,:),'g','LineWidth',2);
+            plot(separatrix4(1,:),separatrix4(2,:),'g','LineWidth',2);
             
         end
         

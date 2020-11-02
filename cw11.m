@@ -52,6 +52,7 @@ plot(ylist(3,:),ylist(1,:),'k-');
 xlabel("beta")
 ylabel("I")
 xlim([3.5,6]);
+title("Bifurcation Diagram")
 
 hold on
 scatter(ylist(3,:),ylist(1,:),15,stab,'filled')
@@ -61,7 +62,7 @@ leg = zeros(3, 1);
 leg(1) = plot(NaN,NaN,'or','MarkerFaceColor','r');
 leg(2) = plot(NaN,NaN,'ob','MarkerFaceColor','b');
 leg(3) = plot(NaN,NaN,'og','MarkerFaceColor','g');
-legend(leg, 'Unstable','Saddle','Stable');
+legend(leg, 'Unstable','Saddle','Stable','Location','southeast');
 
 hold off
 

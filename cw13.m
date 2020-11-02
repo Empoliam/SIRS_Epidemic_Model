@@ -43,6 +43,12 @@ for i = foldApprox
     sol = MySolve(ffold,I0,dffold); %Solve system to find fold point
     foldList = [foldList, sol(1:3)]; %Add to list of solutions
     
+    %Print result
+    disp("Fold bifurcation at:")
+    disp(["I = ", num2str(sol(1))])
+    disp(["R = " ,num2str(sol(2))])
+    disp(["beta = " , num2str(sol(3))])
+    
 end
 
 %System of equations defining a hopf point
@@ -54,7 +60,14 @@ hopfList = []; %Array of true hopf locations
 for i = hopfApprox
     
     I0 = ylist(:,i);
-    hopfList = [hopfList , MySolve(fhopf,I0,dfhopf)]; %Solve and add to list of solutions
+    sol = MySolve(fhopf,I0,dfhopf);
+    hopfList = [hopfList , sol]; %Solve and add to list of solutions
+    
+    %Print result
+    disp("Hopf bifurcation at:")
+    disp(["I = ", num2str(sol(1))])
+    disp(["R = " ,num2str(sol(2))])
+    disp(["beta = " , num2str(sol(3))])
     
 end
 
@@ -74,12 +87,14 @@ leg(2) = plot(NaN,NaN,'ob','MarkerFaceColor','b');
 leg(3) = plot(NaN,NaN,'og','MarkerFaceColor','g');
 leg(4) = plot(NaN,NaN,'o','MarkerFaceColor',[1,1,0],'MarkerEdgeColor',[1,1,0]);
 leg(5) = plot(NaN,NaN,'o','MarkerFaceColor',[1,0,1],'MarkerEdgeColor',[1,0,1]);
-legend(leg, 'Unstable','Saddle','Stable','Hopf','Fold');
+legend(leg, 'Unstable','Saddle','Stable','Hopf','Fold','Location','southeast');
 
 hold off
 
 xlabel("beta")
 ylabel("I")
+
+title("Bifurcation Diagram")
 
 xlim([3.5,6]);
 
@@ -178,5 +193,6 @@ xlim([0,12])
 ylabel('gamma')
 ylim([0,0.07])
 
+title("Hopf and Fold Dynamics")
 
 save('hopf_fold','hopfList','foldList')

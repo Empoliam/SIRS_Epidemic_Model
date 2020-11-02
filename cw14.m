@@ -1,13 +1,13 @@
 clear
 
 sir_model_680029911;
-jacobianAccuracy = 1e-10;
+jacobianAccuracy = 1e-8;
 
 load('ylist_stab.mat');
 load('hopf_fold.mat');
 
 %Flow map steps
-N = 1000;
+N = 500;
 
 %Flow map
 M = @(t1,x0,p) MyIVP(@(t,x) rhs(x,p),x0,[0,t1],N,'dp45');
@@ -97,10 +97,6 @@ end
 figure(1)
 cMap = colormap(0.9.*[0,0,1;0,1,0;1,0,0]);
 
-xlabel("beta")
-ylabel("I")
-xlim([3.5,6]);
-
 plot(ylist(3,:),ylist(1,:),'k-');
 
 %Add max/min orbit values
@@ -108,6 +104,22 @@ hold on
 scatter(ylist(3,:),ylist(1,:),15,stab,'filled')
 gscatter(rangeI(1,:),rangeI(2,:),orbStab,'gr','__',[5,5],false)
 gscatter(rangeI(1,:),rangeI(3,:),orbStab,'gr','++',[5,5],false)
+
+%Legend
+leg = zeros(5, 1);
+leg(1) = plot(NaN,NaN,'or','MarkerFaceColor','r');
+leg(2) = plot(NaN,NaN,'ob','MarkerFaceColor','b');
+leg(3) = plot(NaN,NaN,'og','MarkerFaceColor','g');
+leg(4) = plot(NaN,NaN,'k+');
+leg(5) = plot(NaN,NaN,'k_');
+legend(leg, 'Unstable','Saddle','Stable','Orbit Max','Orbit Min','Location','northwest');
+
+xlabel("beta")
+ylabel("I")
+xlim([3.5,6]);
+
+title("Bifurcation Diagram")
+
 hold off
 
 %Plot orbit family in beta-T plane
@@ -118,10 +130,13 @@ plot(orbList(3,:),orbList(1,:),'k')
 hold on
 %Green for stable, red for unstable
 scatter(orbList(3,:),orbList(1,:),15,orbStab,'filled')
+
 hold off
 
 xlabel("beta")
 ylabel("T")
+
+title("Period of orbits")
 
 %%Plot examples of periodic orbits
 figure(3)
@@ -184,12 +199,14 @@ while i <= length(orbStab)
     
 end
 
-% f = @(x) M(x(1),[xStar;x(2)],x(3)) - [xStar;x(2)];
-% JM = @(x) MyJacobian(@(y) M(x(1),y,x(3)), [xStar;x(2)], jacobianAccuracy);
+%For reference
+%M = @(t1,x0,p) MyIVP(@(t,x) rhs(x,p),x0,[0,t1],N,'dp45');
+%f = @(x) M(x(1),[xStar;x(2)],x(3)) - [xStar;x(2)];
+%JM = @(x) MyJacobian(@(y) M(x(1),y,x(3)), [xStar;x(2)], jacobianAccuracy);
 
 %Equations for fold point
 res = @(x) [f(x(1:3)); JM(x(1:3)) * x(4:5); x(4:5)' * x(4:5) - 1];
-dres = @(x) MyJacobian(res,x,jacobianAccuracy*1e2);
+dres = @(x) MyJacobian(res,x,jacobianAccuracy*1e-6);
 
 %Find initial guess for v
 [eVec,~] = eigs(JM(foldApprox));
@@ -198,11 +215,22 @@ dres = @(x) MyJacobian(res,x,jacobianAccuracy*1e2);
 x0 = [foldApprox;eVec(:,2)];
 
 %Converge to fold point
-sol = MySolve(res,x0,dres);
+sol = MySolve(res,x0,dres,'tol',5e-3);
+
+%Print result
+disp(["Fold at beta = ", num2str(sol(3))])
 
 figure(2)
 hold on
-plot(sol(3),sol(1),'o','MarkerFaceColor',[1,0,1],'MarkerEdgeColor',[1,0,1])
+plot(sol(3),sol(1),'o','MarkerFaceColor',[1,0,1],'MarkerEdgeColor',[1,0,1],'MarkerSize',4)
+
+%Legend
+leg = zeros(2, 1);
+leg(1) = plot(NaN,NaN,'or','MarkerFaceColor','r');
+leg(2) = plot(NaN,NaN,'og','MarkerFaceColor','g');
+leg(3) = plot(NaN,NaN,'o','MarkerFaceColor',[1,0,1],'MarkerEdgeColor',[1,0,1]);
+legend(leg, 'Unstable','Stable','Fold','Location','northeast');
+
 hold off
 
 %%Track fold point - INCOMPLETE
