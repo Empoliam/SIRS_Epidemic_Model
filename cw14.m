@@ -131,22 +131,24 @@ title("Period of orbits")
 
 %%Plot examples of periodic orbits
 figure(3)
-sgtitle("Example orbits")
+title("Example orbits")
 
-%Select 10 orbits, evenly spaced
-orbIndices = floor(linspace(1,nnz(~isnan(orbStab)),10));
+hold on
+
+%Select nOrb orbits, evenly spaced
+nOrb = 20;
+orbIndices = floor(linspace(1,nnz(~isnan(orbStab)),nOrb));
 
 i = 1;
-while i <= 10
+while i <= nOrb
     
     j = orbIndices(i);
     
     %Solve orbit
-    [~,~,orb] = MyIVP(@(t,x) rhs(x,orbList(3,j)),[xStar,orbList(2,j)],[0,orbList(1,j)],floor(N/5),'dp45');
+    [~,~,orb] = MyIVP(@(t,x) rhs(x,orbList(3,j)),[xStar,orbList(2,j)],[0,orbList(1,j)],floor(N/2),'dp45');
     
     %Plot orbit
-    subplot(5,2,i)
-    
+        
     %Colour by stability
     if(orbStab(j) == 1)
         orbStyle = 'g';
@@ -162,11 +164,11 @@ while i <= 10
     xlabel("I")
     ylabel("R")
     
-    title("beta = " + num2str(orbList(3,j)));
-    
     i = i + 1;
     
 end
+
+hold off
 
 %%Locate fold point
 
@@ -249,6 +251,14 @@ leg(3) = plot(NaN,NaN,'og','MarkerFaceColor','g');
 leg(4) = plot(NaN,NaN,'k+');
 leg(5) = plot(NaN,NaN,'k_');
 legend(leg, 'Unstable','Saddle','Stable','Orbit Max','Orbit Min','Location','northwest');
+
+hold off
+
+%plot on orbit examples
+figure(3)
+hold on
+
+plot(orbFold(1,:),orbFold(2,:),'Color',[1,0,1]);
 
 hold off
 
