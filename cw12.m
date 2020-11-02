@@ -90,7 +90,7 @@ for beta = betaList
     while j <= length(guesses(1,:))
         
         %Converge guess to true equilibrium point
-        eqPoint = Solve(f,guesses(:,j),df);
+        eqPoint = MySolve(f,guesses(:,j),df);
         
         [eVecs,eVals] = eigs(df(eqPoint));
         

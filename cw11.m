@@ -14,7 +14,7 @@ f = @(I) rhs(I,B);
 df = @(I) MyJacobian(f,I,jacobianAccuracy);
 
 %Locate the initial equilibrium when B = 6, initial guess I=[0.25;0.25]
-I0 = Solve(f,[0.25;0.25],df);
+I0 = MySolve(f,[0.25;0.25],df);
 
 %Locate equilibria using pseudo arclength continuation
 y0 = [I0;B]; %Start point for curve tracking

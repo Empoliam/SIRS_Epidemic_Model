@@ -40,7 +40,7 @@ for i = foldApprox
          
     [eVec,~] = eigs(df(ylist(:,i))); %Calculate eigenvectors of jacobian
     I0 = [ylist(:,i);eVec(:,2)]; %Concatenate initial guess with eigenvector to create initial guess for fold point system
-    sol = Solve(ffold,I0,dffold);
+    sol = MySolve(ffold,I0,dffold); %Solve system to find fold point
     foldList = [foldList, sol(1:3)]; %Add to list of solutions
     
 end
@@ -54,7 +54,7 @@ hopfList = []; %Array of true hopf locations
 for i = hopfApprox
     
     I0 = ylist(:,i);
-    hopfList = [hopfList , Solve(fhopf,I0,dfhopf)]; %Solve and add to list of solutions
+    hopfList = [hopfList , MySolve(fhopf,I0,dfhopf)]; %Solve and add to list of solutions
     
 end
 

@@ -198,7 +198,7 @@ dres = @(x) MyJacobian(res,x,jacobianAccuracy*1e2);
 x0 = [foldApprox;eVec(:,2)];
 
 %Converge to fold point
-sol = Solve(res,x0,dres);
+sol = MySolve(res,x0,dres);
 
 figure(2)
 hold on
